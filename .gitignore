@@ -1,0 +1,26 @@
+# Maven
+**/target/
+**.jar
+**.war
+
+# IDEs (VS Code, IntelliJ, Eclipse)
+**/.idea/
+**.iml
+**/.vscode/
+**/.settings/
+**/.classpath
+**/.project/
+
+# Logs e ficheiros temporários
+**/logs/
+**.log
+**/.DS_Store
+**/Thumbs.db
+
+# Ficheiros de ambiente e credenciais
+# Ficheiros de ambiente e credenciais
+.env
+*.env
+**/.env
+**/application-secret.yml
+**/application-secret.properties

@@ -1,0 +1,46 @@
+services:
+  postgres-restaurant:
+    image: postgres:16-alpine
+    container_name: postgres-restaurant
+    environment:
+      POSTGRES_DB: restaurant_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d restaurant_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  restaurant-service:
+    build: ../restaurant-service
+    container_name: restaurant-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-restaurant:5432/restaurant_db
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      SERVER_PORT: ${PORT:-8081}
+    depends_on:
+      postgres-restaurant:
+        condition: service_healthy
+
+  redis-restaurant:
+    image: redis:7-alpine
+    container_name: redis-restaurant
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  postgres_data:
